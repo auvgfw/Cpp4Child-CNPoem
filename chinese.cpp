@@ -27,8 +27,7 @@ int main()
 {
 	srand(time(0));
 	std::wcout.imbue(std::locale("chs"));
-	shengchengzidian();
-	lesson_guide();
+	randompinyin();
 
 }
 void shengchengzidian()
@@ -164,28 +163,33 @@ void randompinyin()
 {
 	string shengmu[23] = { "b","p","m", "f", "d", "t", "n", "l", "g", "k", "h", "j", "q", "x", "z", "c", "s", "zh", "ch", "sh", "r", "y", "w" };
 	string yunmu[24] = { "a", "o", "e", "i", "u", "v", "ai", "ei", "ui", "ao", "ou", "iu", "ie", "ve", "er", "an", "en", "in", "un", "vn", "ang", "eng", "ing", "ong" };
-	string shengdiao[4] = { "-","/","v","\\" };
-	for (int i = 0; i < 100; i++)
-	{
-		int i_shengmu = rand() % 23;
-		int i_yunmu = rand() % 24;
-		int i_shengdiao = rand() % 4;
-		if (shengmu[i_shengmu] == "b")
-		{
-			while (yunmu[i_yunmu] == "un" || "vn")
-			{
-				int i_yunmu = rand() % 24;
+	int shengdiao[4] = { 1,2,3,4 };
+	int i_shengmu;
+	int i_yunmu;
+	int i_shengdiao;
+	char key;
+	int i=0;
+	while(1)
+	{ 
+		i_shengmu = rand() % 23;
+		i_yunmu = rand() % 24;
+		i_shengdiao = rand() % 4;
 
-			}
+		string pinyin = shengmu[i_shengmu] + yunmu[i_yunmu];
+		if (pinyin != "ba"&&pinyin!="bo"&&pinyin!="bi") //拼音不在白名单
+		{
+			cout << "拼音不在白名单"<<endl;
+			continue;
 		}
 
-		int space = shengmu[i_shengmu].length();
-		for (int j = 0; j <= space - 1; j++)
-		{
-			cout << " ";
 
+		cout <<i<<":"<< pinyin<<shengdiao[i_shengdiao]<< endl << endl;
+		i++;
+		key=getchar();
+		if (key == 'q')
+		{
+			break;
 		}
-		cout << shengdiao[i_shengdiao] << endl;
-		cout << shengmu[i_shengmu] << yunmu[i_yunmu] << endl << endl;
+
 	}
 }
