@@ -6,9 +6,8 @@
 #include <cmath>
 #include <ctime>
 using namespace std;
-
-void randompinyin();
 void randompoem();
+void randompinyin(string req_shengmu = "*", string req_yunmu = "*");
 void lesson_guide();
 void shengchengzidian();
 
@@ -27,12 +26,12 @@ int main()
 {
 	srand(time(0));
 	std::wcout.imbue(std::locale("chs"));
-	randompinyin();
+	randompinyin("b");
 
 }
 void shengchengzidian()
 {
-	int counter=0;
+	int counter = 0;
 	std::ifstream f;
 
 	f.open("unicode_to_pinyin.txt");
@@ -72,9 +71,9 @@ void lesson_guide()
 	char playpoem;
 	while (1)
 	{
-		
+
 		randompoem();
-		playpoem=getchar();
+		playpoem = getchar();
 		system("cls");
 		if (playpoem == 'q')
 		{
@@ -97,7 +96,7 @@ void lesson_guide()
 		hanziunicodehex << hex << iter->first;
 		hanziunicodehex >> hanziunicodeint;
 		hanzi = hanziunicodeint;
-		cout << counter<<":";
+		cout << counter << ":";
 		wcout << hanzi;
 		cout << "-" << iter->second << "  ";
 		iter++;
@@ -131,7 +130,7 @@ void lesson_guide()
 }
 
 void randompoem()
-{	
+{
 	cout << endl << endl << endl << endl << endl << endl << endl << endl << endl;
 
 	cout << "                                           计      算      机      作      诗" << endl << endl << endl;
@@ -145,7 +144,7 @@ void randompoem()
 			wcout << hanzibiao[rand() % 20253];
 			cout << " ";
 		}
-		if (j == 0 || j == 2 || j == 4||j==6)
+		if (j == 0 || j == 2 || j == 4 || j == 6)
 		{
 			cout << "，";
 		}
@@ -153,43 +152,88 @@ void randompoem()
 		{
 			cout << "。";
 		}
-		cout << endl<<endl;
+		cout << endl << endl;
 	}
 
 }
 
 
-void randompinyin()
+void randompinyin(string req_shengmu, string req_yunmu)
 {
 	string shengmu[23] = { "b","p","m", "f", "d", "t", "n", "l", "g", "k", "h", "j", "q", "x", "z", "c", "s", "zh", "ch", "sh", "r", "y", "w" };
 	string yunmu[24] = { "a", "o", "e", "i", "u", "v", "ai", "ei", "ui", "ao", "ou", "iu", "ie", "ve", "er", "an", "en", "in", "un", "vn", "ang", "eng", "ing", "ong" };
-	int shengdiao[4] = { 1,2,3,4 };
-	int i_shengmu;
-	int i_yunmu;
-	int i_shengdiao;
+	int shengmulenth = sizeof(shengmu) / sizeof(shengmu[0]);
+	int yunmulenth = sizeof(yunmu) / sizeof(yunmu[0]);
+	//合法的汉语拼音表
+	string pinYinWhiteList_Temp = "ba bo bai bei bao ban ben bang beng bi bie biao bian bin bing pa po pai pao pou pan pen pang peng pi pie piao pian pin ping ma mo me mai mao mou man men mang meng mi mie miao miu mian min ming fa fo fei fou fan fen fang feng da de dai dei dao dou dan dang deng di die diao diu dian ding ta te tai tao tou tan tang teng ti tie tiao tian ting na nai nei nao no nen nang neng ni nie niao niu nian nin niang ning la le lai lei lao lou lan lang leng li lia lie liao liu lian lin liang ling ga ge gai gei gao gou gan gen gang geng ka ke kai kou kan ken kang keng ha he hai hei hao hou hen hang heng ji jia jie jiao jiu jian jin jiang jing qi qia qie qiao qiu qian qin qiang qing xi xia xie xiao xiu xian xin xiang xing zha zhe zhi zhai zhao zhou zhan zhen zhang zheng cha che chi chai chou chan chen chang cheng sha she shi shai shao shou shan shen shang sheng re ri rao rou ran ren rang reng za ze zi zai zao zou zang zeng ca ce ci cai cao cou can cen cang ceng sa se si sai sao sou san sen sang seng ya yao you yan yang yu ye yue yuan yi yin yun ying wa wo wai wei wan wen wang weng wu";
+	string pinYinWhiteList[552];
+	int shengdiao;
+	int i_shengmu = 0;
+	int i_yunmu = 0;
 	char key;
-	int i=0;
-	while(1)
-	{ 
-		i_shengmu = rand() % 23;
-		i_yunmu = rand() % 24;
-		i_shengdiao = rand() % 4;
+	int i = 0;
+	int n = 0;
+	stringstream line(pinYinWhiteList_Temp);
+	i = 0;
+	//将temp白名单分割成数组。即是说，把一个字符串"aa bb cc dd"分割成"aa","bb","cc","dd"多个字符串，并分别保存在数组的一个个元素里
+	while (getline(line, pinYinWhiteList_Temp, ' '))
+	{
+		pinYinWhiteList[i] = pinYinWhiteList_Temp;
+		i++;
+	}
+	int pinYinWhiteListLenth = sizeof(pinYinWhiteList) / sizeof(pinYinWhiteList[0]);
+
+	//使用sizeof（数组名）/sizeof（数组里的第一个元素）可以知道数组里一共有多少元素
+
+	//从0到数组最后一位遍历，看看req_yunmu是否在韵母表里
+	for (i = 0; i < yunmulenth; i++)
+	{
+		if (yunmu[i] == req_yunmu)
+		{
+			i_yunmu = i;
+			break;
+		}
+	}
+	//同上，判断声母在不在列表
+	for (i = 0; i < shengmulenth; i++)
+	{
+		if (shengmu[i] == req_shengmu)
+		{
+			i_shengmu = i;
+			break;
+		}
+	}
+
+	n= 0;
+
+	while (1)
+	{
+		if (shengmu[i_shengmu] != req_shengmu)
+		{
+			i_shengmu = rand() % 23;
+		}
+		if (yunmu[i_yunmu] != req_yunmu)
+		{
+			i_yunmu = rand() % 24;
+		}
+		shengdiao = rand() % 4 + 1;
 
 		string pinyin = shengmu[i_shengmu] + yunmu[i_yunmu];
-		if (pinyin != "ba"&&pinyin!="bo"&&pinyin!="bi") //拼音不在白名单
+		//从遍历白名单，看看pinyin是否在里面
+		for (int i = 0; i < pinYinWhiteListLenth; i++)
 		{
-			cout << "拼音不在白名单"<<endl;
-			continue;
+			if (pinyin == pinYinWhiteList[i])
+			{
+				cout<<n<<":" << pinyin<<shengdiao<<endl<<endl;
+				n++;
+				break;
+			}
 		}
 
 
-		cout <<i<<":"<< pinyin<<shengdiao[i_shengdiao]<< endl << endl;
-		i++;
-		key=getchar();
-		if (key == 'q')
+		if (n >= 100)
 		{
 			break;
 		}
-
 	}
 }
